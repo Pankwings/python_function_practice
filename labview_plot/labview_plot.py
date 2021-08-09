@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from os import walk
+import sys
 import os
 import math
 from matplotlib.ticker import AutoMinorLocator
@@ -41,8 +42,8 @@ def read_file():
                 
             if fnmatch.fnmatch(filename, information_name):
                 location_and_information = location + filename
-    
     return(location_and_data, location_and_information, data_file_name)
+
 
 def read_content_of_file(location_and_data, location_and_information ,data_file_name):
     '''
@@ -122,7 +123,6 @@ def plotter(total_x_axis, total_y_axis, data_file_name, information = '' ):
     ax.set_xlabel('Voltage (V)')
     ax.set_ylabel('Current (nA)')
     #ax.text(left,bottom,information)
-
     ax.text(left, bottom, information, horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
 
     ax.set_ylim(math.floor(min(total_y_axis)/current_unit)-5,math.ceil(max(total_y_axis)/current_unit)+5)
@@ -136,11 +136,17 @@ def plotter(total_x_axis, total_y_axis, data_file_name, information = '' ):
     ax.tick_params(which='major', length=7)
     ax.tick_params(which='minor', length=4, color='k')
     #plt.savefig(,bbox_inches='tight',transparent=False)
-    plt.savefig('./data_iv/'+data_file_name+'.png', dpi=None, facecolor='w', edgecolor='w',orientation='portrait', format=None,transparent=False, bbox_inches='tight', pad_inches=0.1, metadata=None)
+    #plt.savefig('./data_iv/'+data_file_name+'.png', dpi=None, facecolor='w', edgecolor='w',orientation='portrait', format=None,transparent=False, bbox_inches='tight', pad_inches=0.1, metadata=None)
     plt.show()
     
     ###---------------------------------------
 if __name__ == '__main__':
-    location_and_data, location_and_information, data_file_name = read_file()
-    total_x_axis, total_y_axis,data_file_name, information = read_content_of_file(location_and_data, location_and_information, data_file_name)
-    plotter(total_x_axis, total_y_axis, information, data_file_name)
+    try:
+        location_and_data, location_and_information, data_file_name = read_file()
+    except UnboundLocalError: 
+        print("File not found !")
+        exit()
+    else:
+        total_x_axis, total_y_axis,data_file_name, information = read_content_of_file(location_and_data, location_and_information, data_file_name)
+        plotter(total_x_axis, total_y_axis, information, data_file_name)
+    
