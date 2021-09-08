@@ -32,7 +32,7 @@ def read_file():
     data_name = data_name if data_name != "" else "*.dat"
     
     information_name = input("\nEnter the name of the file containing information : ") #information_name : contains name of .txt file.
-    information_name = information_name if information_name != "" else "*.txt"
+    information_name = information_name if information_name != "" else "*__LOG.txt"
          
     for (dirpath, _, filenames) in walk(location):
         for filename in filenames:
@@ -54,6 +54,7 @@ def read_content_of_file(location_and_data, location_and_information ,data_file_
     '''
     ## Using  the location with name obtain from above program
     ## Reading the data from the '*.dat' file.
+    
     
     data = pd.read_table(location_and_data) 
     
@@ -84,11 +85,19 @@ def read_content_of_file(location_and_data, location_and_information ,data_file_
             else:
                 information += line
     ##-----------------------------------------------------
+    total_x_axis = pd.Series(dtype='float64')
+    total_y_axis = pd.Series(dtype='float64')
+    num_of_column=data.count(axis='columns').head(1)
+    for i in range(0, int(num_of_column/2)):
+        x = str('S'+str(i+1)+'C1')
+        y = str('S'+str(i+1)+'C2')
+        total_x_axis = total_x_axis.append(data[x])
+        total_y_axis = total_y_axis.append(data[y])
 
-    #print(data.columns) # To know the name of the columns
 
-    total_x_axis = (data['S1C1'].append(data['S2C1'])).append(data['S3C1'])
-    total_y_axis = (data['S1C2'].append(data['S2C2'])).append(data['S3C2'])
+    #total_x_axis = (data['S1C1'].append(data['S2C1'])).append(data['S3C1'])
+    #total_y_axis = (data['S1C2'].append(data['S2C2'])).append(data['S3C2'])
+
     return(total_x_axis, total_y_axis, information, data_file_name)
 
 def plotter(total_x_axis, total_y_axis, data_file_name, information = '' ):
@@ -103,8 +112,28 @@ def plotter(total_x_axis, total_y_axis, data_file_name, information = '' ):
     
     ##---------------------------
     ## Program for selecting the unit of the current in y axis. The default unit is 'nA'.
-    current_unit = input('Enter the current input (i.e., 1e-9 for nA) : ')
-    current_unit = 1e-9 if current_unit == '' else current_unit #if nothing is given it will take 'nA' i.e., 1e-9
+    str_current_unit = str.lower(input('Enter the current input (i.e., nA for 1e-9) : '))
+    if str_current_unit == '':
+        current_unit = 1e-9
+        str_current_unit = 'nA'
+    elif str_current_unit == 'a':
+        current_unit = 1
+        str_current_unit = 'A'
+    elif str_current_unit == 'ma':
+        current_unit = 1e-3
+        str_current_unit = 'mA'
+    elif str_current_unit == 'ua':
+        current_unit = 1e-6
+        str_current_unit = 'µA'
+    elif str_current_unit == 'na':
+        current_unit = 1e-9
+        str_current_unit = 'nA'
+    elif str_current_unit == 'pa':
+        current_unit = 1e-12
+        str_current_unit = 'pA'
+    
+
+    #current_unit = 1e-9 if str_current_unit == '' else current_unit #if nothing is given it will take 'nA' i.e., 1e-9    
     current_unit = float(current_unit)
     ##---------------------------
     ## Program for taking the 'Title of the plot'
@@ -121,7 +150,7 @@ def plotter(total_x_axis, total_y_axis, data_file_name, information = '' ):
     ax.grid(which='both')
     #ax.set_xlabel('Voltage (V)\n\n'+information)
     ax.set_xlabel('Voltage (V)')
-    ax.set_ylabel('Current (nA)')
+    ax.set_ylabel('Current ('+str_current_unit+')')
     #ax.text(left,bottom,information)
     ax.text(left, bottom, information, horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
 
