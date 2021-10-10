@@ -22,7 +22,7 @@ for [location_,_,file_names] in walk(location):
                 continue
             if new_name.lower() == 's' or new_name.lower() == 'stop':
                 break
-            new_name = name.split('.')[0] + new_name +'.'+ name.split('.')[1]
+            new_name = name.split('.')[0] +'_'+ new_name +'_.'+ name.split('.')[1]
             src = path.join(location, target_dir, name)
             dst = path.join(location,target_dir, new_name)
             os.rename(src, dst)
